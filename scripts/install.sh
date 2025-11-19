@@ -21,11 +21,28 @@ detect_platform() {
     echo "${ARCH}-${OS}"
 }
 
-download_binary() {
+get_latest_release_url() {
     PLATFORM=$(detect_platform)
-    URL="https://raw.githubusercontent.com/${REPO}/main/releases/${BIN_NAME}-${PLATFORM}"
+    API_URL="https://api.github.com/repos/${REPO}/releases/latest"
 
-    echo "➡ Baixando ${BIN_NAME} (${PLATFORM})..."
+    echo "➡ Consultando última versão disponível..."
+    LATEST_TAG=$(curl -fsSL "$API_URL" | grep -Po '"tag_name": "\K.*?(?=")')
+
+    if [ -z "$LATEST_TAG" ]; then
+        echo "Erro ao obter a última versão."
+        exit 1
+    fi
+
+    echo "➡ Última versão: $LATEST_TAG"
+
+    echo "https://github.com/${REPO}/releases/download/${LATEST_TAG}/${BIN_NAME}-${PLATFORM}"
+}
+
+download_binary() {
+    mkdir -p "$INSTALL_DIR"
+    URL=$(get_latest_release_url)
+
+    echo "➡ Baixando $BIN_NAME ($URL)..."
     curl -fsSL "$URL" -o "$INSTALL_DIR/$BIN_NAME"
     chmod +x "$INSTALL_DIR/$BIN_NAME"
 }
@@ -44,13 +61,12 @@ ensure_path() {
 }
 
 main() {
-    mkdir -p "$INSTALL_DIR"
     download_binary
     ensure_path
 
     echo
     echo "🎉 Instalação concluída!"
-    echo "Use:  kamisama make:slug \"Olá mundo\""
+    echo "Use: kamisama make:slug \"Olá mundo\""
 }
 
 main
