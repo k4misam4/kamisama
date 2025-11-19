@@ -3,7 +3,7 @@ set -e
 
 REPO="k4misam4/kamisama"
 INSTALL_DIR="$HOME/.kamisama/bin"
-BIN_NAME="kamisama"
+BIN_NAME="kamisama-x86_64-linux"
 
 detect_platform() {
     case "$(uname -s)" in
@@ -23,7 +23,7 @@ detect_platform() {
 
 download_binary() {
     PLATFORM=$(detect_platform)
-    URL="https://github.com/${REPO}/releases/latest/download/${BIN_NAME}-${PLATFORM}"
+    URL="https://raw.githubusercontent.com/${REPO}/main/releases/${BIN_NAME}-${PLATFORM}"
 
     echo "➡ Baixando ${BIN_NAME} (${PLATFORM})..."
     curl -fsSL "$URL" -o "$INSTALL_DIR/$BIN_NAME"
