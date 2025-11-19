@@ -5,74 +5,34 @@ on:
     tags:
       - "v*"
 
-permissions:
-  contents: write
-
 jobs:
   build:
-    name: Build (${{ matrix.target }})
-    runs-on: ${{ matrix.os }}
+    name: Build Release
+    runs-on: ubuntu-latest
 
     strategy:
-      fail-fast: false
       matrix:
         include:
-          # Linux x86_64
-          - os: ubuntu-latest
-            target: x86_64-unknown-linux-gnu
-            artifact: kamisama-x86_64-linux
-
-          # Linux ARM64
-          - os: ubuntu-latest
-            target: aarch64-unknown-linux-gnu
-            artifact: kamisama-aarch64-linux
-
-          # macOS Intel
-          - os: macos-latest
-            target: x86_64-apple-darwin
-            artifact: kamisama-x86_64-macos
-
-          # macOS ARM (Apple Silicon)
-          - os: macos-latest
-            target: aarch64-apple-darwin
-            artifact: kamisama-aarch64-macos
-
-          # Windows
-          - os: windows-latest
-            target: x86_64-pc-windows-msvc
-            artifact: kamisama-x86_64-windows.exe
+          - target: x86_64-unknown-linux-gnu
+            output: kamisama-x86_64-linux
+          - target: aarch64-unknown-linux-gnu
+            output: kamisama-aarch64-linux
 
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - name: Install Rust
-        uses: dtolnay/rust-toolchain@stable
-        with:
-          targets: ${{ matrix.target }}
-
-      # Only needed for Linux ARM64 cross
-      - name: Install Linux ARM64 linker
-        if: matrix.target == 'aarch64-unknown-linux-gnu'
-        run: sudo apt-get update && sudo apt-get install -y gcc-aarch64-linux-gnu
+      - name: Install targets
+        run: rustup target add ${{ matrix.target }}
 
       - name: Build
         run: cargo build --release --target ${{ matrix.target }}
 
-      - name: Rename binary
-        run: |
-          mkdir -p release
-          if [[ "${{ matrix.os }}" == "windows-latest" ]]; then
-            cp target/${{ matrix.target }}/release/kamisama.exe release/${{ matrix.artifact }}
-          else
-            cp target/${{ matrix.target }}/release/kamisama release/${{ matrix.artifact }}
-          fi
-
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ matrix.artifact }}
-          path: release/${{ matrix.artifact }}
+          name: ${{ matrix.output }}
+          path: target/${{ matrix.target }}/release/kamisama
+          if-no-files-found: error
 
   release:
     name: Publish Release
@@ -80,23 +40,11 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Download all artifacts
-        uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v4
         with:
-          path: release
+          path: ./artifacts
 
-      - name: Generate checksums
-        run: |
-          cd release
-          for f in *; do
-            sha256sum "$f" > "$f.sha256"
-          done
-
-      - name: Create GitHub Release
-        uses: softprops/action-gh-release@v2
+      - name: Create Release
+        uses: softprops/action-gh-release@v1
         with:
-          draft: false
-          files: |
-            release/*
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          files: ./artifacts/*/*
