@@ -3,7 +3,7 @@ set -e
 
 REPO="k4misam4/kamisama"
 INSTALL_DIR="$HOME/.kamisama/bin"
-BIN_NAME="kamisama-x86_64-linux"
+BIN_NAME="kamisama"
 
 detect_platform() {
     case "$(uname -s)" in
