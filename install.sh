@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -e
 
-REPO="kamisama-repo/kamisama"
+REPO="k4misam4/kamisama"
 INSTALL_DIR="$HOME/.kamisama/bin"
 BIN_NAME="kamisama"
 
