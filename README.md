@@ -58,15 +58,6 @@ $ kamisama make:slug "Criação de Slug Super Útil! @2025"
 # → criacao-de-slug-super-util-2025
 ```
 
-#### Recursos
-- Aceita múltiplos argumentos
-- Totalmente compatível com comandos do shell
-
-```bash
-$ echo "ÁÉÍÓÚ çãõ ÇÃÕ" | kamisama make:slug
-# → aeiou-cao-cao
-```
-
 ```bash
 $ kamisama make:slug "Olá Mundo Cruel 2025"
 # → ola-mundo-cruel-2025
