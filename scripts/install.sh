@@ -42,7 +42,7 @@ download_binary() {
     mkdir -p "$INSTALL_DIR"
     URL=$(get_latest_release_url)
 
-    echo "➡ Baixando $BIN_NAME ($URL)..."
+    echo "➡ Baixando $BIN_NAME versão $LATEST_TAG para $PLATFORM..."
     curl -fsSL "$URL" -o "$INSTALL_DIR/$BIN_NAME"
     chmod +x "$INSTALL_DIR/$BIN_NAME"
 }
