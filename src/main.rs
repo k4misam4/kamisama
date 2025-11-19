@@ -1,4 +1,4 @@
-use clap::{Parser, Subcommand};
+use clap::{CommandFactory, Parser, Subcommand};
 use regex::Regex;
 use unicode_normalization::{UnicodeNormalization, char::is_combining_mark};
 
@@ -53,6 +53,12 @@ fn to_slug(input: &str, sep: &str) -> String {
 
 fn main() {
     let cli = Cli::parse();
+
+    if cli.command.is_none() {
+        Cli::command().print_help().unwrap();
+        println!("help");
+        return;
+    }
 
     if let Some(cmd) = cli.command {
         match cmd {
