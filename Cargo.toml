@@ -1,0 +1,9 @@
+[package]
+name = "kamisama"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+clap = { version = "4.2", features = ["derive"] }
+regex = "1.8"
+unicode-normalization = "0.1"
