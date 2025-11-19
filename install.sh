@@ -1,56 +1,29 @@
-#!/usr/bin/env bash
+#!/bin/bash
 set -e
 
-REPO="k4misam4/kamisama"
-INSTALL_DIR="$HOME/.kamisama/bin"
-BIN_NAME="kamisama"
+mkdir -p releases
 
-detect_platform() {
-    case "$(uname -s)" in
-        Linux*)   OS="linux" ;;
-        Darwin*)  OS="macos" ;;
-        *) echo "Sistema operacional não suportado."; exit 1 ;;
-    esac
+echo "🚀 Iniciando build dos binários..."
 
-    case "$(uname -m)" in
-        x86_64) ARCH="x86_64" ;;
-        arm64|aarch64) ARCH="aarch64" ;;
-        *) echo "Arquitetura não suportada."; exit 1 ;;
-    esac
+build() {
+    local target=$1
+    local outfile=$2
 
-    echo "${ARCH}-${OS}"
-}
+    echo "▶ Build: $target"
+    RUSTFLAGS="-C target-cpu=native" \
+    cargo build --release --target $target
 
-download_binary() {
-    PLATFORM=$(detect_platform)
-    URL="https://github.com/${REPO}/releases/latest/download/${BIN_NAME}-${PLATFORM}"
-
-    echo "➡ Baixando ${BIN_NAME} (${PLATFORM})..."
-    curl -fsSL "$URL" -o "$INSTALL_DIR/$BIN_NAME"
-    chmod +x "$INSTALL_DIR/$BIN_NAME"
-}
-
-ensure_path() {
-    if ! echo "$PATH" | grep -q "$INSTALL_DIR"; then
-        echo "➡ Adicionando $INSTALL_DIR ao PATH..."
-
-        SHELL_RC="$HOME/.bashrc"
-        [ -n "$ZSH_VERSION" ] && SHELL_RC="$HOME/.zshrc"
-        [ -n "$FISH_VERSION" ] && SHELL_RC="$HOME/.config/fish/config.fish"
-
-        echo "export PATH=\"\$PATH:$INSTALL_DIR\"" >> "$SHELL_RC"
-        echo "✔ PATH atualizado. Reinicie o terminal."
+    BIN="target/$target/release/kamisama"
+    if [ ! -f "$BIN" ]; then
+        echo "❌ Erro: binário não encontrado em $BIN"
+        exit 1
     fi
+
+    cp "$BIN" "releases/$outfile"
+    echo "✔ Gerado: releases/$outfile"
 }
 
-main() {
-    mkdir -p "$INSTALL_DIR"
-    download_binary
-    ensure_path
+build x86_64-unknown-linux-gnu "kamisama-x86_64-linux"
+build aarch64-unknown-linux-gnu "kamisama-aarch64-linux"
 
-    echo
-    echo "🎉 Instalação concluída!"
-    echo "Use:  kamisama make:slug \"Olá mundo\""
-}
-
-main
+echo "🎉 Finalizado!"
