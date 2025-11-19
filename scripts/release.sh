@@ -1,51 +1,29 @@
-#!/usr/bin/env bash
+#!/bin/bash
 set -e
-
-echo "🚀 Gerando binários para release..."
 
 mkdir -p releases
 
-# ============================
-#  Linux x86_64
-# ============================
-echo "▶ Build: x86_64-unknown-linux-gnu"
-rustup target add x86_64-unknown-linux-gnu >/dev/null 2>&1 || true
-cargo build --release --target x86_64-unknown-linux-gnu
+echo "🚀 Iniciando build dos binários..."
 
-cp target/x86_64-unknown-linux-gnu/release/kamisama releases/kamisama-x86_64-linux
-chmod +x releases/kamisama-x86_64-linux
+build() {
+    local target=$1
+    local outfile=$2
 
-# ============================
-#  Linux ARM64
-# ============================
-echo "▶ Build: aarch64-unknown-linux-gnu"
-rustup target add aarch64-unknown-linux-gnu >/dev/null 2>&1 || true
-cargo build --release --target aarch64-unknown-linux-gnu
+    echo "▶ Build: $target"
+    RUSTFLAGS="-C target-cpu=native" \
+    cargo build --release --target $target
 
-cp target/aarch64-unknown-linux-gnu/release/kamisama releases/kamisama-aarch64-linux
-chmod +x releases/kamisama-aarch64-linux
+    BIN="target/$target/release/kamisama"
+    if [ ! -f "$BIN" ]; then
+        echo "❌ Erro: binário não encontrado em $BIN"
+        exit 1
+    fi
 
-# ============================
-#  macOS x86_64
-# ============================
-echo "▶ Build: x86_64-apple-darwin"
-rustup target add x86_64-apple-darwin >/dev/null 2>&1 || true
-cargo build --release --target x86_64-apple-darwin
+    cp "$BIN" "releases/$outfile"
+    echo "✔ Gerado: releases/$outfile"
+}
 
-cp target/x86_64-apple-darwin/release/kamisama releases/kamisama-x86_64-macos
-chmod +x releases/kamisama-x86_64-macos
+build x86_64-unknown-linux-gnu "kamisama-x86_64-linux"
+build aarch64-unknown-linux-gnu "kamisama-aarch64-linux"
 
-# ============================
-#  macOS ARM (Apple Silicon)
-# ============================
-echo "▶ Build: aarch64-apple-darwin"
-rustup target add aarch64-apple-darwin >/dev/null 2>&1 || true
-cargo build --release --target aarch64-apple-darwin
-
-cp target/aarch64-apple-darwin/release/kamisama releases/kamisama-aarch64-macos
-chmod +x releases/kamisama-aarch64-macos
-
-echo ""
-echo "🎉 Todos os binários foram gerados com sucesso!"
-echo "Arquivos na pasta releases/:"
-ls -lh releases
+echo "🎉 Finalizado!"
