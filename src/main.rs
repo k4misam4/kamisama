@@ -17,7 +17,9 @@ enum Commands {
 
     #[command(name = "make:slug")]
     MakeSlug {
-        text: Vec<String>
+        text: Vec<String>,
+         #[arg(short = 'c', long = "char", default_value = "-")]
+        separator: String
     },
 
     #[command(name = "version")]
@@ -27,21 +29,21 @@ enum Commands {
     VersionShort
 }
 
-fn to_slug(input: &str) -> String {
+fn to_slug(input: &str, sep: &str) -> String {
     let normalized: String = input.nfd()
         .filter(|c| !is_combining_mark(*c))
         .collect();
 
     let lower = normalized.to_lowercase();
 
-    let re_non_alnum = Regex::new(r"[^a-z0-9]+").unwrap();
-    let mut slug = re_non_alnum.replace_all(&lower, "-").to_string();
+    let re = Regex::new(r"[^a-z0-9]+").unwrap();
+    let mut slug = re.replace_all(&lower, sep).to_string();
 
-    let rm_multi_dash = Regex::new(r"-{2,}").unwrap();
-    slug = rm_multi_dash.replace_all(&slug, "-").to_string();
-    slug = slug.trim_matches('-').to_string();
+    let re_multi = Regex::new(&format!("{}{{2,}}", regex::escape(sep))).unwrap();
+    slug = re_multi.replace_all(&slug, sep).to_string();
+    
+    slug = slug.trim_matches(|c| sep.contains(c)).to_string();
 
-    // 5) Se ficou vazio, usa "n-a"
     if slug.is_empty() {
         "n-a".to_string()
     } else {
@@ -54,8 +56,8 @@ fn main() {
 
     if let Some(cmd) = cli.command {
         match cmd {
-            Commands::MakeSlug { text } => {
-                println!("{}", to_slug(&text.join(" ")));
+            Commands::MakeSlug { text, separator } => {
+                println!("{}", to_slug(&text.join(" "), &separator));
             },
             Commands::Version | Commands::VersionShort => {
                 println!("{VERSION}");
