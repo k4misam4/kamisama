@@ -21,8 +21,7 @@ detect_platform() {
     echo "${ARCH}-${OS}"
 }
 
-get_latest_release_url() {
-    PLATFORM=$(detect_platform)
+get_latest_release() {
     API_URL="https://api.github.com/repos/${REPO}/releases/latest"
 
     echo "➡ Consultando última versão disponível..."
@@ -34,13 +33,14 @@ get_latest_release_url() {
     fi
 
     echo "➡ Última versão: $LATEST_TAG"
-
-    echo "https://github.com/${REPO}/releases/download/${LATEST_TAG}/${BIN_NAME}-${PLATFORM}"
 }
 
 download_binary() {
     mkdir -p "$INSTALL_DIR"
-    URL=$(get_latest_release_url)
+    PLATFORM=$(detect_platform)
+    get_latest_release
+
+    URL="https://github.com/${REPO}/releases/download/${LATEST_TAG}/${BIN_NAME}-${PLATFORM}"
 
     echo "➡ Baixando $BIN_NAME versão $LATEST_TAG para $PLATFORM..."
     curl -fsSL "$URL" -o "$INSTALL_DIR/$BIN_NAME"
