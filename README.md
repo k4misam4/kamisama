@@ -30,55 +30,6 @@ Feito com foco em **simplicidade, performance extrema e fácil extensibilidade**
 
 ---
 
-## ⚡ Funcionalidade atual
-
-### `make:slug` — Gere slugs perfeitos instantaneamente
-
-Transforma qualquer texto em um slug limpo, minúsculo, sem acentos ou caracteres especiais.
-
-```bash
-$ kamisama make:slug "Criação de Slug Super Útil! @2025"
-# → criacao-de-slug-super-util-2025
-```
-
-#### Recursos
-- Aceita múltiplos argumentos (sem precisar de aspas)
-- Funciona perfeitamente com pipes
-- Totalmente compatível com comandos do shell
-
-```bash
-$ echo "ÁÉÍÓÚ çãõ ÇÃÕ" | kamisama make:slug
-# → aeiou-cao-cao
-
-$ kamisama make:slug Olá Mundo Cruel 2025 | wc -c
-# → super rápido!
-```
-
-#### Ajuda integrada (via Clap)
-```bash
-$ kamisama --help
-$ kamisama make:slug --help
-$ kamisama help
-$ kamisama version
-```
-
-> Executar sem argumentos já exibe a ajuda automaticamente!
-
----
-
-## 🚀 Performance & Qualidade
-
-| Característica                  | Detalhe                                      |
-|----------------------------------|-----------------------------------------------|
-| **Compilação**                   | LTO + otimizações agressivas (`opt-level = "z"`) |
-| **Tamanho do binário**           | Extremamente pequeno                          |
-| **Panic strategy**               | `panic = "abort"` (menor footprint)           |
-| **PGO**                          | Suporte a Profile-Guided Optimization         |
-| **Arquitetura**                  | Código modular, funções puras e testáveis     |
-| **Extensibilidade**              | Novos subcomandos em poucos minutos           |
-
----
-
 ## 📦 Instalação
 
 ### Opção 1: Instalador rápido (recomendado)
@@ -95,6 +46,59 @@ cd kamisama
 cargo build --release
 sudo cp target/release/kamisama /usr/local/bin/
 ```
+
+## ⚡ Como usar
+
+### `make:slug` — Gere slugs perfeitos instantaneamente
+
+Transforma qualquer texto em um slug limpo, minúsculo, sem acentos ou caracteres especiais.
+
+```bash
+$ kamisama make:slug "Criação de Slug Super Útil! @2025"
+# → criacao-de-slug-super-util-2025
+```
+
+#### Recursos
+- Aceita múltiplos argumentos
+- Totalmente compatível com comandos do shell
+
+```bash
+$ echo "ÁÉÍÓÚ çãõ ÇÃÕ" | kamisama make:slug
+# → aeiou-cao-cao
+```
+
+```bash
+$ kamisama make:slug "Olá Mundo Cruel 2025"
+# → ola-mundo-cruel-2025
+```
+
+```bash
+$ kamisama make:slug "Olá Mundo Cruel 2025" -c "+"
+# → ola+mundo+cruel+2025
+```
+
+#### Ajuda integrada
+```bash
+$ kamisama --help
+$ kamisama make:slug --help
+$ kamisama help
+$ kamisama version
+```
+
+---
+
+## 🚀 Performance & Qualidade
+
+| Característica                  | Detalhe                                      |
+|----------------------------------|-----------------------------------------------|
+| **Compilação**                   | LTO + otimizações agressivas (`opt-level = "z"`) |
+| **Tamanho do binário**           | Extremamente pequeno                          |
+| **Panic strategy**               | `panic = "abort"` (menor footprint)           |
+| **PGO**                          | Suporte a Profile-Guided Optimization         |
+| **Arquitetura**                  | Código modular, funções puras e testáveis     |
+| **Extensibilidade**              | Novos subcomandos em poucos minutos           |
+
+---
 
 ---
 
