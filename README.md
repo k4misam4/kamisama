@@ -1,6 +1,5 @@
 Aqui está o seu README bem mais bonito, organizado e profissional em Markdown:
 
-```markdown
 # 🐾 kamisama
 
 [![Release](https://img.shields.io/github/v/release/k4misam4/kamisama?color=blue&label=release)](https://github.com/k4misam4/kamisama/releases)
@@ -107,4 +106,3 @@ Distribuído sob a licença **MIT**. Veja o arquivo [`LICENSE`](LICENSE) para ma
 
 Feito com ❤️ por **Kami Sama**  
 Dê uma ⭐ no repositório se curtiu! → [github.com/k4misam4/kamisama](https://github.com/k4misam4/kamisama)
-```
