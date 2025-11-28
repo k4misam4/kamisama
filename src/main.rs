@@ -1,4 +1,4 @@
-use clap::{CommandFactory, Parser, Subcommand};
+use clap::{Parser, Subcommand, CommandFactory};
 use regex::Regex;
 use unicode_normalization::{UnicodeNormalization, char::is_combining_mark};
 
@@ -6,7 +6,7 @@ const VERSION: &str = "kama-sama v0.0.1";
 
 #[derive(Parser)]
 #[command(name = "kamisama")]
-#[command(about = "Ferramenta REPL simples para criar slugs", long_about = None)]
+#[command(about = "Kami-Sama é uma ferramenta de linha de comando poderosa e leve, criada para agrupar várias utilidades do dia a dia em um único binário veloz e confiável — tudo escrito em RUST", long_about = None)]
 struct Cli {
     #[command(subcommand)]
     command: Option<Commands>,
@@ -20,6 +20,10 @@ enum Commands {
         text: Vec<String>,
          #[arg(short = 'c', long = "char", default_value = "-")]
         separator: String
+    },
+    #[command(name = "sum")]
+    Sum {
+        text: Vec<String>
     },
 
     #[command(name = "version")]
@@ -51,6 +55,11 @@ fn to_slug(input: &str, sep: &str) -> String {
     }
 }
 
+fn sum(raw_values: Vec<String>) -> i32 {
+    let values: Vec<i32> = raw_values.iter().map(|e| e.parse::<i32>().unwrap_or_else(|_| panic!("O valor {} não um número válido", e))).collect();
+    values.iter().sum()
+}
+
 fn main() {
     let cli = Cli::parse();
 
@@ -64,6 +73,9 @@ fn main() {
         match cmd {
             Commands::MakeSlug { text, separator } => {
                 println!("{}", to_slug(&text.join(" "), &separator));
+            },
+            Commands::Sum { text} => {
+                println!("Sum -> {}", sum(text));
             },
             Commands::Version | Commands::VersionShort => {
                 println!("{VERSION}");
